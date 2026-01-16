@@ -1,0 +1,102 @@
+@use 'sass:map';
+
+@use './ref-typeface';
+
+$_default: ref-typeface.values();
+
+@function values($deps: $_default) {
+  @return (
+    // body large
+    'body-large-font': map.get($deps, 'plain'),
+    'body-large-line-height': 1.5rem,
+    'body-large-size': 1rem,
+    'body-large-tracking': 0.03125rem,
+    'body-large-weight': map.get($deps, 'weight-regular'),
+    // body medium
+    'body-medium-font': map.get($deps, 'plain'),
+    'body-medium-line-height': 1.25rem,
+    'body-medium-size': 0.875rem,
+    'body-medium-tracking': 0.015625rem,
+    'body-medium-weight': map.get($deps, 'weight-regular'),
+    // body small
+    'body-small-font': map.get($deps, 'plain'),
+    'body-small-line-height': 1rem,
+    'body-small-size': 0.75rem,
+    'body-small-tracking': 0.025rem,
+    'body-small-weight': map.get($deps, 'weight-regular'),
+    // display large
+    'display-large-font': map.get($deps, 'brand'),
+    'display-large-line-height': 4rem,
+    'display-large-size': 3.5625rem,
+    'display-large-tracking': -0.015625rem,
+    'display-large-weight': map.get($deps, 'weight-regular'),
+    // display medium
+    'display-medium-font': map.get($deps, 'brand'),
+    'display-medium-line-height': 3.25rem,
+    'display-medium-size': 2.8125rem,
+    'display-medium-tracking': 0rem,
+    'display-medium-weight': map.get($deps, 'weight-regular'),
+    // display small
+    'display-small-font': map.get($deps, 'brand'),
+    'display-small-line-height': 2.75rem,
+    'display-small-size': 2.25rem,
+    'display-small-tracking': 0rem,
+    'display-small-weight': map.get($deps, 'weight-regular'),
+    // headline large
+    'headline-large-font': map.get($deps, 'brand'),
+    'headline-large-line-height': 2.5rem,
+    'headline-large-size': 2rem,
+    'headline-large-tracking': 0rem,
+    'headline-large-weight': map.get($deps, 'weight-regular'),
+    // headline medium
+    'headline-medium-font': map.get($deps, 'brand'),
+    'headline-medium-line-height': 2.25rem,
+    'headline-medium-size': 1.75rem,
+    'headline-medium-tracking': 0rem,
+    'headline-medium-weight': map.get($deps, 'weight-regular'),
+    // headline small
+    'headline-small-font': map.get($deps, 'brand'),
+    'headline-small-line-height': 2rem,
+    'headline-small-size': 1.5rem,
+    'headline-small-tracking': 0rem,
+    'headline-small-weight': map.get($deps, 'weight-regular'),
+    // label large
+    'label-large-font': map.get($deps, 'plain'),
+    'label-large-line-height': 1.25rem,
+    'label-large-size': 0.875rem,
+    'label-large-tracking': 0.00625rem,
+    'label-large-weight': map.get($deps, 'weight-medium'),
+    'label-large-weight-prominent': map.get($deps, 'weight-bold'),
+    // label medium
+    'label-medium-font': map.get($deps, 'plain'),
+    'label-medium-line-height': 1rem,
+    'label-medium-size': 0.75rem,
+    'label-medium-tracking': 0.03125rem,
+    'label-medium-weight': map.get($deps, 'weight-medium'),
+    'label-medium-weight-prominent': map.get($deps, 'weight-bold'),
+    // label small
+    'label-small-font': map.get($deps, 'plain'),
+    'label-small-line-height': 1rem,
+    'label-small-size': 0.6875rem,
+    'label-small-tracking': 0.03125rem,
+    'label-small-weight': map.get($deps, 'weight-medium'),
+    // title large
+    'title-large-font': map.get($deps, 'brand'),
+    'title-large-line-height': 1.75rem,
+    'title-large-size': 1.375rem,
+    'title-large-tracking': 0rem,
+    'title-large-weight': map.get($deps, 'weight-regular'),
+    // title medium
+    'title-medium-font': map.get($deps, 'plain'),
+    'title-medium-line-height': 1.5rem,
+    'title-medium-size': 1rem,
+    'title-medium-tracking': 0.009375rem,
+    'title-medium-weight': map.get($deps, 'weight-medium'),
+    // title small
+    'title-small-font': map.get($deps, 'plain'),
+    'title-small-line-height': 1.25rem,
+    'title-small-size': 0.875rem,
+    'title-small-tracking': 0.00625rem,
+    'title-small-weight': map.get($deps, 'weight-medium')
+  );
+}

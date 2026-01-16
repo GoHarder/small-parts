@@ -1,0 +1,102 @@
+@use 'sass:map';
+@use './ref-palette';
+
+$_default-light: ref-palette.palette-light();
+$_default-dark: ref-palette.palette-dark();
+
+@function values($light: $_default-light, $dark: $_default-dark) {
+  @return (
+    // Primary
+    'primary': light-dark(map.get($light, 'primary40'), map.get($dark, 'primary80')),
+    'on-primary': light-dark(map.get($light, 'primary100'), map.get($dark, 'primary20')),
+    'primary-container': light-dark(map.get($light, 'primary90'), map.get($dark, 'primary30')),
+    'on-primary-container': light-dark(map.get($light, 'primary10'), map.get($dark, 'primary90')),
+    // Secondary
+    'secondary': light-dark(map.get($light, 'secondary40'), map.get($dark, 'secondary80')),
+    'on-secondary': light-dark(map.get($light, 'secondary100'), map.get($dark, 'secondary20')),
+    'secondary-container': light-dark(map.get($light, 'secondary90'), map.get($dark, 'secondary30')),
+    'on-secondary-container': light-dark(
+        map.get($light, 'secondary10'),
+        map.get($dark, 'secondary90')
+      ),
+    // Tertiary
+    'tertiary': light-dark(map.get($light, 'tertiary40'), map.get($dark, 'tertiary80')),
+    'on-tertiary': light-dark(map.get($light, 'tertiary100'), map.get($dark, 'tertiary20')),
+    'tertiary-container': light-dark(map.get($light, 'tertiary90'), map.get($dark, 'tertiary30')),
+    'on-tertiary-container': light-dark(map.get($light, 'tertiary10'), map.get($dark, 'tertiary90')),
+    // Error
+    'error': light-dark(map.get($light, 'error40'), map.get($dark, 'error80')),
+    'on-error': light-dark(map.get($light, 'error100'), map.get($dark, 'error20')),
+    'error-container': light-dark(map.get($light, 'error90'), map.get($dark, 'error30')),
+    'on-error-container': light-dark(map.get($light, 'error10'), map.get($dark, 'error90')),
+    // Surface
+    'surface-dim': light-dark(map.get($light, 'neutral87'), map.get($dark, 'neutral6')),
+    'surface': light-dark(map.get($light, 'neutral98'), map.get($dark, 'neutral6')),
+    'surface-bright': light-dark(map.get($light, 'neutral98'), map.get($dark, 'neutral24')),
+    // Surface Container
+    'surface-container-lowest': light-dark(
+        map.get($light, 'neutral100'),
+        map.get($dark, 'neutral4')
+      ),
+    'surface-container-low': light-dark(map.get($light, 'neutral96'), map.get($dark, 'neutral10')),
+    'surface-container': light-dark(map.get($light, 'neutral94'), map.get($dark, 'neutral12')),
+    'surface-container-high': light-dark(map.get($light, 'neutral92'), map.get($dark, 'neutral17')),
+    'surface-container-highest': light-dark(
+        map.get($light, 'neutral90'),
+        map.get($dark, 'neutral22')
+      ),
+    // On Surface
+    'on-surface': light-dark(map.get($light, 'neutral10'), map.get($dark, 'neutral90')),
+    'on-surface-variant': light-dark(
+        map.get($light, 'neutral-variant30'),
+        map.get($dark, 'neutral-variant80')
+      ),
+    // Outline
+    'outline':
+      light-dark(map.get($light, 'neutral-variant50'), map.get($dark, 'neutral-variant60')),
+    'outline-variant': light-dark(
+        map.get($light, 'neutral-variant80'),
+        map.get($dark, 'neutral-variant30')
+      ),
+    // Inverse
+    'inverse-surface': light-dark(map.get($light, 'neutral20'), map.get($dark, 'neutral90')),
+    'inverse-on-surface': light-dark(map.get($light, 'neutral95'), map.get($dark, 'neutral20')),
+    'inverse-primary': light-dark(map.get($light, 'primary80'), map.get($dark, 'primary40')),
+    // Background
+    'background': light-dark(map.get($light, 'neutral98'), map.get($dark, 'neutral6')),
+    'on-background': light-dark(map.get($light, 'neutral10'), map.get($dark, 'neutral90')),
+    // Surface Tint
+    //
+    //
+    'surface-tint': light-dark(map.get($light, 'primary40'), map.get($dark, 'primary80')),
+    'surface-variant': light-dark(
+        map.get($light, 'neutral-variant90'),
+        map.get($dark, 'neutral-variant30')
+      ),
+    // Fixed
+    'primary-fixed': light-dark(map.get($light, 'primary90'), map.get($dark, 'primary90')),
+    'primary-fixed-dim': light-dark(map.get($light, 'primary80'), map.get($dark, 'primary80')),
+    'on-primary-fixed': light-dark(map.get($light, 'primary10'), map.get($dark, 'primary10')),
+    'on-primary-fixed-variant': light-dark(
+        map.get($light, 'primary30'),
+        map.get($dark, 'primary30')
+      ),
+    'secondary-fixed': light-dark(map.get($light, 'secondary90'), map.get($dark, 'secondary90')),
+    'secondary-fixed-dim': light-dark(map.get($light, 'secondary80'), map.get($dark, 'secondary80')),
+    'on-secondary-fixed': light-dark(map.get($light, 'secondary10'), map.get($dark, 'secondary10')),
+    'on-secondary-fixed-variant': light-dark(
+        map.get($light, 'secondary30'),
+        map.get($dark, 'secondary30')
+      ),
+    'tertiary-fixed': light-dark(map.get($light, 'tertiary90'), map.get($dark, 'tertiary90')),
+    'tertiary-fixed-dim': light-dark(map.get($light, 'tertiary80'), map.get($dark, 'tertiary80')),
+    'on-tertiary-fixed': light-dark(map.get($light, 'tertiary10'), map.get($dark, 'tertiary10')),
+    'on-tertiary-fixed-variant': light-dark(
+        map.get($light, 'tertiary30'),
+        map.get($dark, 'tertiary30')
+      ),
+    // Shadows
+    'scrim': light-dark(map.get($light, 'neutral0'), map.get($dark, 'neutral0')),
+    'shadow': light-dark(map.get($light, 'neutral0'), map.get($dark, 'neutral0'))
+  );
+}

@@ -1,0 +1,38 @@
+@use './tokens/sys-color';
+@use './tokens/sys-typescale';
+
+$_colors: sys-color.values();
+$_typescale: sys-typescale.values();
+
+:root {
+  --md-ref-typeface-brand:
+    'Familjen Grotesk', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --md-ref-typeface-plain:
+    'Roboto', system-ui, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol';
+  --md-ref-typeface-system:
+    system-ui, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol';
+
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px; // +4
+  --md-sys-shape-corner-medium: 12px; // +4
+  --md-sys-shape-corner-large: 16px; // +4
+  --md-sys-shape-corner-extra-large: 28px; // +12
+
+  @each $key, $value in $_typescale {
+    --md-sys-typescale-#{$key}: #{$value};
+  }
+
+  @each $key, $color in $_colors {
+    --md-sys-color-#{$key}: #{$color};
+  }
+
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  interpolate-size: allow-keywords;
+}

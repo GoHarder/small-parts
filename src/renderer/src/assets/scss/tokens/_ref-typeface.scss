@@ -1,0 +1,9 @@
+@function values() {
+  @return (
+    'brand': var(--md-ref-typeface-brand),
+    'plain': var(--md-ref-typeface-plain),
+    'weight-bold': 700,
+    'weight-medium': 500,
+    'weight-regular': 400
+  );
+}

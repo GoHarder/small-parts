@@ -1,0 +1,19 @@
+@use './scss/root';
+@use './scss/reset';
+@use './scss/mixin';
+
+body {
+  @include mixin.text-style('body-medium');
+  user-select: none;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+}
+
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-direction: column;
+  margin-top: 10px;
+}
