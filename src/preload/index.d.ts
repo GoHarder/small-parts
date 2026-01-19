@@ -1,6 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
-type NewProject = {
+type Project = {
   contractNo: string
   poNo: string
   price: number
@@ -14,8 +14,9 @@ declare global {
   interface Window {
     electron: ElectronAPI
     api: {
-      newProject: (project: NewProject) => void
-      getCurrentProjects: (callback: (value: NewProject[]) => void) => void
+      newProject: (project: Project) => void
+      deleteProject: (contractNo: string) => void
+      getProjects: (callback: (value: Project[]) => void) => void
     }
   }
 }

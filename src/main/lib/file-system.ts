@@ -1,18 +1,34 @@
 // MARK: Imports
 // -----------------------------------------------------------------------------
-import { mkdir, readdir, readFile as nReadFile, writeFile as nWriteFile } from 'node:fs/promises'
+import {
+  mkdir,
+  readdir,
+  readFile as nReadFile,
+  writeFile as nWriteFile,
+  rm
+} from 'node:fs/promises'
+import { isSystemError } from './error'
+
+import { Json } from '@moss/types'
 
 // MARK: Types
 // -----------------------------------------------------------------------------
-import { PathLike } from 'node:fs'
+import { type PathLike } from 'node:fs'
 
 // MARK: Library
 // -----------------------------------------------------------------------------
 export async function createDir(path: PathLike) {
   try {
-    await mkdir(path)
+    return await mkdir(path)
   } catch (error) {
+    if (isSystemError(error) && error.code === 'EEXIST') {
+      return {
+        code: 'EEXIST',
+        message: `The directory ${path} already exists.`
+      }
+    }
     console.log(error)
+    return
   }
 }
 
@@ -28,6 +44,7 @@ export async function readDir(path: PathLike) {
     }
   } catch (error) {
     console.log(error)
+    process.exit(1)
   }
 }
 
@@ -45,5 +62,36 @@ export async function readFile(path: PathLike) {
     return data
   } catch (error) {
     console.log(error)
+    return ''
+  }
+}
+
+export async function deleteDir(path: PathLike) {
+  // ENOENT
+  // ENOTEMPTY
+
+  try {
+    await rm(path, { recursive: true, force: true })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function writeJsonFile<D = Json>(path: PathLike, data: D) {
+  try {
+    const dataString = JSON.stringify(data, null, 2)
+    await nWriteFile(path, dataString)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function readJsonFile<R>(path: PathLike) {
+  try {
+    const dataString = await readFile(path)
+    return JSON.parse(dataString) as R
+  } catch (error) {
+    console.log(error)
+    return
   }
 }

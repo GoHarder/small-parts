@@ -4,7 +4,8 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   newProject: (project) => ipcRenderer.send('new-project', project),
-  getCurrentProjects: (callback) => ipcRenderer.on('get', (_event, value) => callback(value))
+  getProjects: (callback) => ipcRenderer.on('get-projects', (_event, value) => callback(value)),
+  deleteProject: (contractNo: string) => ipcRenderer.send('delete-project', contractNo)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

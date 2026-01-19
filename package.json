@@ -30,6 +30,7 @@
     "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@moss/comp": "https://github.com/GoHarder/moss-components/releases/download/v0.4.3/moss-comp-0.4.3.tgz",
+    "@moss/types": "https://github.com/GoHarder/js-library/releases/download/v0.2.2/moss-types-0.1.0.tgz",
     "@sveltejs/vite-plugin-svelte": "^6.2.0",
     "@types/node": "^22.19.1",
     "electron": "^39.2.6",

@@ -1,10 +1,19 @@
-import { app, shell, BrowserWindow, ipcMain, ipcRenderer } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-import { newProject, getCurrentProjects } from './lib/api'
-import { menu } from './lib/memu'
+type Project = {
+  contractNo: string
+  poNo: string
+  price: number
+  customerName: string
+  created: Date
+  releaseDate: Date | null
+  notes: string
+}
+
+import { newProject, getProjects, deleteProject } from './app/projects'
 
 function createWindow(): void {
   // Create the browser window.
@@ -12,7 +21,7 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
-    // autoHideMenuBar: true,
+    autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -23,8 +32,6 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
-
-  mainWindow.setMenu(menu)
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -56,9 +63,14 @@ app.whenReady().then(() => {
 
   // IPC test
 
-  ipcMain.on('new-project', (event, project) => {
-    newProject(project)
-    event.reply('get', [])
+  ipcMain.on('new-project', async (event, project: Project) => {
+    await newProject(project)
+    event.reply('get-projects', await getProjects())
+  })
+
+  ipcMain.on('delete-project', async (event, contractNo: string) => {
+    await deleteProject(contractNo)
+    event.reply('get-projects', await getProjects())
   })
 
   createWindow()
