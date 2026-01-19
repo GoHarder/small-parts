@@ -4,8 +4,11 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   newProject: (project) => ipcRenderer.send('new-project', project),
-  getProjects: (callback) => ipcRenderer.on('get-projects', (_event, value) => callback(value)),
-  deleteProject: (contractNo: string) => ipcRenderer.send('delete-project', contractNo)
+  getProjects: () => ipcRenderer.send('get-projects'),
+  deleteProject: (directory: string) => ipcRenderer.send('delete-project', directory),
+  updateProject: (project) => ipcRenderer.send('update-project', project),
+  updateProjects: (callback) =>
+    ipcRenderer.on('update-projects', (_event, value) => callback(value))
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

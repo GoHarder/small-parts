@@ -5,8 +5,8 @@ type Project = {
   poNo: string
   price: number
   customerName: string
-  created: Date
-  releaseDate: Date | null
+  created: Date | string
+  releaseDate: string | null
   notes: string
 }
 
@@ -15,8 +15,10 @@ declare global {
     electron: ElectronAPI
     api: {
       newProject: (project: Project) => void
-      deleteProject: (contractNo: string) => void
-      getProjects: (callback: (value: Project[]) => void) => void
+      getProjects: () => void
+      deleteProject: (directory: string) => void
+      updateProjects: (callback: (value: Project[]) => void) => void
+      updateProject: (project: Project) => void
     }
   }
 }

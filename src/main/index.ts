@@ -13,7 +13,7 @@ type Project = {
   notes: string
 }
 
-import { newProject, getProjects, deleteProject } from './app/projects'
+import { newProject, getProjects, deleteProject, updateProject } from './app/projects'
 
 function createWindow(): void {
   // Create the browser window.
@@ -36,6 +36,11 @@ function createWindow(): void {
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
+  })
+
+  mainWindow.webContents.on('did-finish-load', async () => {
+    const projects = await getProjects()
+    mainWindow.webContents.send('get-projects', projects)
   })
 
   // HMR for renderer base on electron-vite cli.
@@ -65,12 +70,21 @@ app.whenReady().then(() => {
 
   ipcMain.on('new-project', async (event, project: Project) => {
     await newProject(project)
-    event.reply('get-projects', await getProjects())
+    event.reply('update-projects', await getProjects())
   })
 
   ipcMain.on('delete-project', async (event, contractNo: string) => {
     await deleteProject(contractNo)
-    event.reply('get-projects', await getProjects())
+    event.reply('update-projects', await getProjects())
+  })
+
+  ipcMain.on('update-project', async (event, project: Project) => {
+    await updateProject(project)
+    event.reply('update-projects', await getProjects())
+  })
+
+  ipcMain.on('get-projects', async (event) => {
+    event.reply('update-projects', await getProjects())
   })
 
   createWindow()

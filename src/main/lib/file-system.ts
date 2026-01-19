@@ -67,9 +67,6 @@ export async function readFile(path: PathLike) {
 }
 
 export async function deleteDir(path: PathLike) {
-  // ENOENT
-  // ENOTEMPTY
-
   try {
     await rm(path, { recursive: true, force: true })
   } catch (error) {

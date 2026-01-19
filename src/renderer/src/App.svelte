@@ -32,6 +32,8 @@
 <Versions />-->
 
 <script lang="ts">
+  import { onMount } from 'svelte'
+
   // MARK: Types
   // -----------------------------------------------------------------------------
   type Project = {
@@ -40,7 +42,7 @@
     price: number
     customerName: string
     created: Date | string
-    releaseDate: Date | null
+    releaseDate: string | null
     notes: string
   }
 
@@ -67,20 +69,15 @@
   let price = $state<number>(1495.0)
   let customerName = $state<string>('Schindler')
 
-  let projects = $state<Project[]>([
-    {
-      contractNo: '625317-test',
-      poNo: '4700722976',
-      price: 1495,
-      customerName: 'Schindler',
-      created: '2026-01-19T14:15:46.088Z',
-      releaseDate: null,
-      notes: ''
-    }
-  ])
+  let formEle = $state<HTMLFormElement>(null)
+
+  let projects = $state<Project[]>([])
 
   // MARK: Derived
   // -----------------------------------------------------------------------------
+  let liveProjects = $derived(projects.filter((project) => project.releaseDate === null))
+  let releasedProjects = $derived(projects.filter((project) => project.releaseDate !== null))
+
   // MARK: Effects
   // -----------------------------------------------------------------------------
   // MARK: Contexts
@@ -103,26 +100,39 @@
     }
 
     window.api.newProject(project)
+
+    formEle.reset()
   }
 
   function onDelete(contractNo: string) {
+    const project = projects.find((project) => project.contractNo === contractNo)
     // TODO: Ask for confirmation
-    window.api.deleteProject(contractNo)
+    window.api.deleteProject(`${project.contractNo} ${project.customerName}`)
   }
 
   function onRelease(contractNo: string) {
-    console.log('Release', contractNo)
+    const project = projects.find((project) => project.contractNo === contractNo)
+    if (!project) return
+    project.releaseDate = new Date().toISOString()
+
+    const snap = $state.snapshot(project)
+    window.api.updateProject(snap)
   }
 
-  window.api.getProjects((update) => {
+  window.api.updateProjects((update) => {
     projects = update
   })
 
   // MARK: Lifecycle
   // -----------------------------------------------------------------------------
+  onMount(() => {
+    if (projects.length === 0) {
+      window.api.getProjects()
+    }
+  })
 </script>
 
-<form onsubmit={onNewProject}>
+<form bind:this={formEle} onsubmit={onNewProject}>
   <TextField label="Customer name" bind:value={customerName} />
   <TextField label="Contract number" bind:value={contractNo} />
   <TextField label="Purchase order number" bind:value={poNo} />
@@ -133,12 +143,25 @@
   </Button>
 </form>
 
-<List>
-  {#each projects as project (project.contractNo)}
-    <ProjectItem
-      {project}
-      onDelete={() => onDelete(project.contractNo)}
-      onRelease={() => onRelease(project.contractNo)}
-    />
-  {/each}
-</List>
+<div>
+  <p>Live projects</p>
+  <List>
+    {#each liveProjects as project (project.contractNo)}
+      <ProjectItem
+        {project}
+        onDelete={() => onDelete(project.contractNo)}
+        onRelease={() => onRelease(project.contractNo)}
+      />
+    {/each}
+  </List>
+</div>
+
+<div>
+  <p>Released projects</p>
+
+  <List>
+    {#each releasedProjects as project (project.contractNo)}
+      <ProjectItem {project} onDelete={() => onDelete(project.contractNo)} onRelease={() => {}} />
+    {/each}
+  </List>
+</div>

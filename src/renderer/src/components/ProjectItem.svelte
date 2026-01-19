@@ -7,7 +7,7 @@
     price: number
     customerName: string
     created: Date | string
-    releaseDate: Date | null
+    releaseDate: string | null
     notes: string
   }
 
@@ -58,7 +58,7 @@
 
 <span style="position: relative">
   <ListItem type="button" id="project-row-{project.contractNo}" onclick={toggleMenu}>
-    <div data-slot="headline">{project.contractNo} - {project.customerName}</div>
+    <div data-slot="headline">{project.contractNo} {project.customerName}</div>
     <div data-slot="supporting-text">PO: {project.poNo}</div>
     <Icon data-slot="end">more_vert</Icon>
   </ListItem>
