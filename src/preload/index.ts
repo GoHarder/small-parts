@@ -3,12 +3,21 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  newProject: (project) => ipcRenderer.send('new-project', project),
-  getProjects: () => ipcRenderer.send('get-projects'),
-  deleteProject: (directory: string) => ipcRenderer.send('delete-project', directory),
-  updateProject: (project) => ipcRenderer.send('update-project', project),
-  updateProjects: (callback) =>
-    ipcRenderer.on('update-projects', (_event, value) => callback(value))
+  projects: {
+    new: (project) => ipcRenderer.send('projects-new', project),
+    get: () => ipcRenderer.send('projects-get'),
+    update: (project) => ipcRenderer.send('projects-update', project),
+    delete: (directory: string) => ipcRenderer.send('projects-delete', directory),
+    listen: (callback) => ipcRenderer.on('projects-listen', (_event, update) => callback(update))
+  },
+  folders: {
+    open: (directory: string) => ipcRenderer.send('folders-open', directory)
+  },
+  settings: {
+    update: (settings) => ipcRenderer.send('settings-update', settings),
+    listen: (callback) =>
+      ipcRenderer.on('settings-listen', (_event, setup, update) => callback(setup, update))
+  }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

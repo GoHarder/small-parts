@@ -7,8 +7,7 @@
     price: number
     customerName: string
     created: Date | string
-    releaseDate: string | null
-    notes: string
+    released: string | null
   }
 
   type Props = {
@@ -22,7 +21,7 @@
   import { Divider } from '@moss/comp/divider'
   import { ListItem } from '@moss/comp/list'
   import { Icon } from '@moss/comp/icon'
-  import { Menu, MenuItem } from '@moss/comp/menu'
+  import { Menu, MenuItem, SubMenu } from '@moss/comp/menu'
 
   // MARK: Stores
   // -----------------------------------------------------------------------------
@@ -52,6 +51,25 @@
     open = !open
   }
 
+  function clipDwgTitle() {
+    navigator.clipboard.writeText(`${project.customerName} - ${project.contractNo} QTY: 0`)
+  }
+
+  function clipEmailSubject() {
+    navigator.clipboard.writeText(
+      `${project.customerName} PO ${project.poNo} - HW ${project.contractNo}`
+    )
+  }
+
+  function clipContract() {
+    navigator.clipboard.writeText(project.contractNo)
+  }
+
+  function openFolder() {
+    window.api.folders.open(`${project.contractNo} ${project.customerName}`)
+    // window.api.openFolder(`${project.contractNo} ${project.customerName}`)
+  }
+
   // MARK: Lifecycle
   // -----------------------------------------------------------------------------
 </script>
@@ -69,14 +87,40 @@
     anchor-corner="start-end"
     menu-corner="end-end"
   >
+    <MenuItem onclick={openFolder}>
+      <div data-slot="headline">Open</div>
+      <Icon data-slot="start">folder_open</Icon>
+    </MenuItem>
+    <!-- Copy -->
+    <SubMenu>
+      <MenuItem data-slot="item">
+        <div data-slot="headline">Copy</div>
+        <Icon data-slot="start">arrow_left</Icon>
+      </MenuItem>
+      <Menu data-slot="menu">
+        <MenuItem onclick={clipDwgTitle}>
+          <div data-slot="headline">Drawing title</div>
+          <Icon data-slot="start">text_snippet</Icon>
+        </MenuItem>
+        <MenuItem onclick={clipEmailSubject}>
+          <div data-slot="headline">Email subject</div>
+          <Icon data-slot="start">text_snippet</Icon>
+        </MenuItem>
+        <MenuItem onclick={clipContract}>
+          <div data-slot="headline">Contract number</div>
+          <Icon data-slot="start">text_snippet</Icon>
+        </MenuItem>
+      </Menu>
+    </SubMenu>
+    <!-- Copy -->
     <MenuItem onclick={onRelease}>
       <div data-slot="headline">Release</div>
-      <Icon data-slot="end">assignment_turned_in</Icon>
+      <Icon data-slot="start">assignment_turned_in</Icon>
     </MenuItem>
     <Divider role="separator" tabindex="-1" />
     <MenuItem onclick={onDelete}>
       <div data-slot="headline">Delete</div>
-      <Icon data-slot="end">delete</Icon>
+      <Icon data-slot="start">delete</Icon>
     </MenuItem>
   </Menu>
 </span>

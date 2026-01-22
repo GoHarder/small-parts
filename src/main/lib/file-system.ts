@@ -1,11 +1,12 @@
 // MARK: Imports
 // -----------------------------------------------------------------------------
 import {
+  access as nAccess,
   mkdir,
   readdir,
   readFile as nReadFile,
-  writeFile as nWriteFile,
-  rm
+  rm,
+  writeFile as nWriteFile
 } from 'node:fs/promises'
 import { isSystemError } from './error'
 
@@ -17,6 +18,16 @@ import { type PathLike } from 'node:fs'
 
 // MARK: Library
 // -----------------------------------------------------------------------------
+export async function access(path: PathLike) {
+  try {
+    await nAccess(path)
+    return true
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
+
 export async function createDir(path: PathLike) {
   try {
     return await mkdir(path)

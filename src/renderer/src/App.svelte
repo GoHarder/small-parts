@@ -1,53 +1,31 @@
-<!-- <script lang="ts">
-  import Versions from './components/Versions.svelte'
-  import electronLogo from './assets/electron.svg'
-
-  let contractNo = $state<string>('625317-test')
-  let poNo = $state<string>('4700722976')
-  let price = $state<number>(1495)
-  let customerName = $state<string>('Schindler')
-  let createdDate = $state<Date>(new Date())
-
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping', newProject)
-</script>
-
-<img alt="logo" class="logo" src={electronLogo} />
-<div class="creator">Powered by electron-vite</div>
-<div class="text">
-  Build an Electron app with
-  <span class="svelte">Svelte</span>
-  and
-  <span class="ts">TypeScript</span>
-</div>
-<p class="tip">Please try pressing <code>F12</code> to open the devTool</p>
-<div class="actions">
-  <div class="action">
-    <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">Documentation</a>
-  </div>
-  <div class="action">
-    svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions a11y-missing-attribute
-    <a target="_blank" rel="noreferrer" onclick={ipcHandle}>Send IPC</a>
-  </div>
-</div>
-<Versions />-->
-
 <script lang="ts">
   import { onMount } from 'svelte'
 
   // MARK: Types
   // -----------------------------------------------------------------------------
   type Project = {
+    _id: string
+    customerName: string
     contractNo: string
     poNo: string
+    user: string
     price: number
-    customerName: string
     created: Date | string
-    releaseDate: string | null
-    notes: string
+    released: string | null
+    bookmarked: boolean
+    // notes: string
+  }
+
+  type Settings = {
+    firstName: string
+    lastName: string
+    email: string
+    server: string
   }
 
   // MARK: Components
   // -----------------------------------------------------------------------------
+  import Settings from './pages/Settings.svelte'
   import { Button } from '@moss/comp/button'
   import { NumberField, TextField } from '@moss/comp/text-field'
   import { Icon } from '@moss/comp/icon'
@@ -64,19 +42,26 @@
   // -----------------------------------------------------------------------------
   // MARK: State
   // -----------------------------------------------------------------------------
-  let contractNo = $state<string>('625317-test')
-  let poNo = $state<string>('4700722976')
-  let price = $state<number>(1495.0)
-  let customerName = $state<string>('Schindler')
+  let contractNo = $state<string>()
+  let poNo = $state<string>()
+  let price = $state<number>()
+  let customerName = $state<string>()
 
   let formEle = $state<HTMLFormElement>(null)
 
+  let setup = $state<boolean>(false)
   let projects = $state<Project[]>([])
+  let settings = $state<Settings>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    server: ''
+  })
 
   // MARK: Derived
   // -----------------------------------------------------------------------------
-  let liveProjects = $derived(projects.filter((project) => project.releaseDate === null))
-  let releasedProjects = $derived(projects.filter((project) => project.releaseDate !== null))
+  let liveProjects = $derived(projects.filter((project) => project.released === null))
+  let releasedProjects = $derived(projects.filter((project) => project.released !== null))
 
   // MARK: Effects
   // -----------------------------------------------------------------------------
@@ -90,16 +75,13 @@
     event.preventDefault()
 
     const project = {
+      customerName,
       contractNo,
       poNo,
-      price,
-      customerName,
-      created: new Date(),
-      releaseDate: null,
-      notes: ''
+      price
     }
 
-    window.api.newProject(project)
+    window.api.projects.new(project)
 
     formEle.reset()
   }
@@ -107,41 +89,60 @@
   function onDelete(contractNo: string) {
     const project = projects.find((project) => project.contractNo === contractNo)
     // TODO: Ask for confirmation
-    window.api.deleteProject(`${project.contractNo} ${project.customerName}`)
+
+    window.api.projects.delete(`${project.contractNo} ${project.customerName}`)
   }
 
   function onRelease(contractNo: string) {
     const project = projects.find((project) => project.contractNo === contractNo)
     if (!project) return
-    project.releaseDate = new Date().toISOString()
+    project.released = new Date().toISOString()
 
     const snap = $state.snapshot(project)
-    window.api.updateProject(snap)
+
+    window.api.projects.update(snap)
   }
 
-  window.api.updateProjects((update) => {
+  window.api.projects.listen((update) => {
     projects = update
+  })
+
+  window.api.settings.listen((isSet, update) => {
+    for (const key in update) {
+      if (update[key] !== null) continue
+      update[key] = ''
+    }
+
+    setup = isSet
+    settings = update
   })
 
   // MARK: Lifecycle
   // -----------------------------------------------------------------------------
   onMount(() => {
-    if (projects.length === 0) {
-      window.api.getProjects()
-    }
+    if (projects.length === 0) window.api.projects.get()
   })
 </script>
 
-<form bind:this={formEle} onsubmit={onNewProject}>
-  <TextField label="Customer name" bind:value={customerName} />
-  <TextField label="Contract number" bind:value={contractNo} />
-  <TextField label="Purchase order number" bind:value={poNo} />
-  <NumberField label="Price" bind:value={price} prefix-text="$" min="0" step="0.01" />
-  <Button variant="filled">
-    <Icon data-slot="icon">assignment_add</Icon>
-    Create project
-  </Button>
-</form>
+{#if !setup}
+  <Settings
+    firstName={settings.firstName}
+    lastName={settings.lastName}
+    email={settings.email}
+    server={settings.server}
+  />
+{:else}
+  <form bind:this={formEle} onsubmit={onNewProject}>
+    <TextField label="Customer name" bind:value={customerName} />
+    <TextField label="Contract number" bind:value={contractNo} />
+    <TextField label="Purchase order number" bind:value={poNo} />
+    <NumberField label="Price" bind:value={price} prefix-text="$" min="0" step="0.01" />
+    <Button variant="filled">
+      <Icon data-slot="icon">assignment_add</Icon>
+      Create project
+    </Button>
+  </form>
+{/if}
 
 <div>
   <p>Live projects</p>

@@ -3,6 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+let running = false
+
 type Project = {
   contractNo: string
   poNo: string
@@ -13,7 +15,16 @@ type Project = {
   notes: string
 }
 
-import { newProject, getProjects, deleteProject, updateProject } from './app/projects'
+type Settings = {
+  firstName: string
+  lastName: string
+  email: string
+  server: string
+}
+
+import projects, { getProjectPath, getProjects, deleteProject, updateProject } from './app/projects'
+
+import { getSettings, initSettings, updateSettings } from './app/settings'
 
 function createWindow(): void {
   // Create the browser window.
@@ -39,8 +50,11 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.on('did-finish-load', async () => {
-    const projects = await getProjects()
-    mainWindow.webContents.send('get-projects', projects)
+    await initSettings()
+    const settings = await getSettings()
+    const setup = settings?.email ? true : false
+    mainWindow.webContents.send('settings-listen', setup, settings)
+    running = true
   })
 
   // HMR for renderer base on electron-vite cli.
@@ -67,24 +81,37 @@ app.whenReady().then(() => {
   })
 
   // IPC test
+  projects()
 
-  ipcMain.on('new-project', async (event, project: Project) => {
-    await newProject(project)
-    event.reply('update-projects', await getProjects())
+  ipcMain.on('projects-get', async (event) => {
+    event.reply('projects-listen', await getProjects())
+
+    if (running) {
+      const settings = await getSettings()
+      const setup = settings?.email ? true : false
+      event.reply('settings-listen', setup, settings)
+    }
   })
 
-  ipcMain.on('delete-project', async (event, contractNo: string) => {
-    await deleteProject(contractNo)
-    event.reply('update-projects', await getProjects())
-  })
-
-  ipcMain.on('update-project', async (event, project: Project) => {
+  ipcMain.on('projects-update', async (event, project: Project) => {
     await updateProject(project)
-    event.reply('update-projects', await getProjects())
+    event.reply('projects-listen', await getProjects())
   })
 
-  ipcMain.on('get-projects', async (event) => {
-    event.reply('update-projects', await getProjects())
+  ipcMain.on('projects-delete', async (event, directory: string) => {
+    await deleteProject(directory)
+    event.reply('projects-listen', await getProjects())
+  })
+
+  ipcMain.on('folders-open', async (_event, directory: string) => {
+    const path = getProjectPath(directory)
+    shell.openPath(path)
+  })
+
+  ipcMain.on('settings-update', async (event, settings: Settings) => {
+    await updateSettings(settings)
+    const setup = settings?.email ? true : false
+    event.reply('settings-listen', setup, settings)
   })
 
   createWindow()
