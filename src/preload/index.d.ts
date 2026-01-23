@@ -8,22 +8,15 @@ type Project = {
   user: string
   price: number
   created: Date | string
+  completed: string | null
   released: string | null
   bookmarked: boolean
-  // notes: string
 }
 
-type NewProject = Omit<Project, '_id' | 'created' | 'user' | 'released' | 'bookmarked'>
-
-// type Project = {
-//   contractNo: string
-//   poNo: string
-//   price: number
-//   customerName: string
-//   created: Date | string
-//   releaseDate: string | null
-//   notes: string
-// }
+type NewProject = Omit<
+  Project,
+  '_id' | 'created' | 'user' | 'released' | 'completed' | 'bookmarked'
+>
 
 type Settings = {
   firstName: string | null
@@ -50,13 +43,6 @@ declare global {
         update: (settings: Settings) => void
         listen: (callback: (valid: boolean, value: Settings) => void) => void
       }
-
-      // newProject: (project: Project) => void
-      // getProjects: () => void
-      // deleteProject: (directory: string) => void
-      // listenToProjects: (callback: (value: Project[]) => void) => void
-      // updateProject: (project: Project) => void
-      // openFolder: (directory: string) => void
     }
   }
 }

@@ -8,9 +8,10 @@ import {
   rm,
   writeFile as nWriteFile
 } from 'node:fs/promises'
-import { isSystemError } from './error'
 
-import { Json } from '@moss/types'
+import { isSystemError } from './error.ts'
+
+import { type Json } from '@moss/types'
 
 // MARK: Types
 // -----------------------------------------------------------------------------
@@ -50,16 +51,19 @@ export async function createDir(path: PathLike) {
 export async function readDir(path: PathLike) {
   try {
     const entries = await readdir(path)
-    for (const entry of entries) {
-      console.log(entry)
-    }
+
+    return entries
+
+    // for (const entry of entries) {
+    //   console.log(entry)
+    // }
   } catch (error) {
     console.log(error)
     process.exit(1)
   }
 }
 
-export async function writeFile(path: PathLike, data: string) {
+export async function writeFile(path: PathLike, data: string | Uint8Array) {
   try {
     await nWriteFile(path, data)
   } catch (error) {
@@ -67,9 +71,19 @@ export async function writeFile(path: PathLike, data: string) {
   }
 }
 
-export async function readFile(path: PathLike) {
+export async function readFile(path: PathLike): Promise<string>
+export async function readFile(path: PathLike, type: 'buffer'): Promise<Buffer>
+export async function readFile(
+  path: PathLike,
+  type: BufferEncoding | 'buffer' = 'utf8'
+): Promise<string | Buffer> {
   try {
-    const data = await nReadFile(path, 'utf8')
+    if (type !== 'buffer') {
+      const data = await nReadFile(path, type)
+      return data
+    }
+
+    const data = await nReadFile(path)
     return data
   } catch (error) {
     console.log(error)

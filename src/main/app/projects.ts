@@ -119,15 +119,37 @@ export async function deleteProject(directory: string) {
 }
 
 export async function updateProject(update: Project) {
-  const projectsPath = join(runningFolder, 'projects.json')
-  let projects = await readJsonFile<Project[]>(projectsPath)
-  if (!projects) return
+  const settings = await getSettings()
+  // TODO: Handle error in UI
+  if (!settings) return
 
-  const index = projects.findIndex((project) => project.contractNo === update.contractNo)
-  if (index === -1) return
-  projects[index] = update
+  let res: Response
+  let resBody: any
 
-  await writeJsonFile(join(runningFolder, 'projects.json'), projects)
+  try {
+    res = await net.fetch(`${settings.server}/api/contracts`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(update)
+    })
+
+    if (res.body && res.status !== 204) resBody = await res.json()
+    if (!res.ok) throw new Error(resBody.message)
+  } catch (error) {
+    // TODO: Handle error in UI
+    console.log(error)
+    return
+  }
+
+  // const projectsPath = join(runningFolder, 'projects.json')
+  // let projects = await readJsonFile<Project[]>(projectsPath)
+  // if (!projects) return
+
+  // const index = projects.findIndex((project) => project.contractNo === update.contractNo)
+  // if (index === -1) return
+  // projects[index] = update
+
+  // await writeJsonFile(join(runningFolder, 'projects.json'), projects)
 
   const path = join(runningFolder, `${update.contractNo} ${update.customerName}`, 'data.json')
 
