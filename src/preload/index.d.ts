@@ -40,8 +40,9 @@ declare global {
         open: (directory: string) => void
       }
       settings: {
+        get: () => void
         update: (settings: Settings) => void
-        listen: (callback: (valid: boolean, value: Settings) => void) => void
+        listen: (callback: (value: Settings) => void) => void
       }
     }
   }

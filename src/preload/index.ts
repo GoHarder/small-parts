@@ -14,9 +14,9 @@ const api = {
     open: (directory: string) => ipcRenderer.send('folders-open', directory)
   },
   settings: {
+    get: () => ipcRenderer.send('settings-get'),
     update: (settings) => ipcRenderer.send('settings-update', settings),
-    listen: (callback) =>
-      ipcRenderer.on('settings-listen', (_event, setup, update) => callback(setup, update))
+    listen: (callback) => ipcRenderer.on('settings-listen', (_event, update) => callback(update))
   }
 }
 

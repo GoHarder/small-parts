@@ -17,12 +17,25 @@ body {
   color: var(--md-sys-color-on-background);
 }
 
-#app {
-  // display: flex;
-  // align-items: center;
-  // justify-content: center;
-  // gap: 20px;
-  // flex-direction: column;
-  margin-top: 12px;
-  margin-inline: 6px;
+// #app {
+//   // display: flex;
+//   // align-items: center;
+//   // justify-content: center;
+//   // gap: 20px;
+//   // flex-direction: column;
+//   // margin-top: 12px;
+//   // margin-inline: 6px;
+// }
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  height: 64px;
+
+  gap: 8px;
+  margin-inline: 4px;
+
+  h1 {
+    @include mixin.text-style('title-large');
+  }
 }

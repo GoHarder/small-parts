@@ -45,10 +45,13 @@ export async function getSettings() {
   if (loadedSettings) return loadedSettings
 
   const settingsPath = join(app.getPath('appData'), 'project-manager', 'user-settings.json')
-  const exists = await access(settingsPath)
-  if (!exists) return
 
   loadedSettings = await readJsonFile<Settings>(settingsPath)
+
+  for (const key in loadedSettings) {
+    if (loadedSettings[key] !== null) continue
+    loadedSettings[key] = ''
+  }
 
   return loadedSettings
 }

@@ -3,8 +3,6 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-let running = false
-
 type Project = {
   contractNo: string
   poNo: string
@@ -51,10 +49,6 @@ function createWindow(): void {
 
   mainWindow.webContents.on('did-finish-load', async () => {
     await initSettings()
-    const settings = await getSettings()
-    const setup = settings?.email ? true : false
-    mainWindow.webContents.send('settings-listen', setup, settings)
-    running = true
   })
 
   // HMR for renderer base on electron-vite cli.
@@ -85,12 +79,6 @@ app.whenReady().then(() => {
 
   ipcMain.on('projects-get', async (event) => {
     event.reply('projects-listen', await getProjects())
-
-    if (running) {
-      const settings = await getSettings()
-      const setup = settings?.email ? true : false
-      event.reply('settings-listen', setup, settings)
-    }
   })
 
   ipcMain.on('projects-update', async (event, project: Project) => {
@@ -108,10 +96,13 @@ app.whenReady().then(() => {
     shell.openPath(path)
   })
 
+  ipcMain.on('settings-get', async (event) => {
+    event.reply('settings-listen', await getSettings())
+  })
+
   ipcMain.on('settings-update', async (event, settings: Settings) => {
     await updateSettings(settings)
-    const setup = settings?.email ? true : false
-    event.reply('settings-listen', setup, settings)
+    event.reply('settings-listen', settings)
   })
 
   createWindow()
