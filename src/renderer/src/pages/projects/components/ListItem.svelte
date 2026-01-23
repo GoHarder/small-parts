@@ -81,26 +81,26 @@
     >
       <MenuItem onclick={openFolder}>
         <div data-slot="headline">Open</div>
-        <Icon data-slot="start">folder_open</Icon>
+        <Icon data-slot="end">folder_open</Icon>
       </MenuItem>
       <!-- Copy -->
       <SubMenu>
         <MenuItem data-slot="item">
           <div data-slot="headline">Copy</div>
-          <Icon data-slot="start">arrow_left</Icon>
+          <Icon data-slot="end">arrow_right</Icon>
         </MenuItem>
         <Menu data-slot="menu">
           <MenuItem onclick={copyDrawingTitle}>
             <div data-slot="headline">Drawing title</div>
-            <Icon data-slot="start">text_snippet</Icon>
+            <Icon data-slot="end">text_snippet</Icon>
           </MenuItem>
           <MenuItem onclick={copyEmailSubject}>
             <div data-slot="headline">Email subject</div>
-            <Icon data-slot="start">text_snippet</Icon>
+            <Icon data-slot="end">text_snippet</Icon>
           </MenuItem>
           <MenuItem onclick={copyContract}>
             <div data-slot="headline">Contract number</div>
-            <Icon data-slot="start">text_snippet</Icon>
+            <Icon data-slot="end">text_snippet</Icon>
           </MenuItem>
         </Menu>
       </SubMenu>
@@ -108,7 +108,7 @@
       {#if onComplete}
         <MenuItem onclick={onComplete}>
           <div data-slot="headline">Complete</div>
-          <Icon data-slot="start">assignment_turned_in</Icon>
+          <Icon data-slot="end">assignment_turned_in</Icon>
         </MenuItem>
       {/if}
       {#if onDelete}
@@ -116,7 +116,7 @@
 
         <MenuItem onclick={onDelete}>
           <div data-slot="headline">Delete</div>
-          <Icon data-slot="start">delete</Icon>
+          <Icon data-slot="end">delete</Icon>
         </MenuItem>
       {/if}
     </Menu>
