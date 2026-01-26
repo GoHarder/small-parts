@@ -6,6 +6,7 @@ const api = {
   projects: {
     new: (project) => ipcRenderer.send('projects-new', project),
     get: () => ipcRenderer.send('projects-get'),
+    getReport: () => ipcRenderer.invoke('projects-get-report'),
     update: (project) => ipcRenderer.send('projects-update', project),
     delete: (directory: string) => ipcRenderer.send('projects-delete', directory),
     listen: (callback) => ipcRenderer.on('projects-listen', (_event, update) => callback(update))

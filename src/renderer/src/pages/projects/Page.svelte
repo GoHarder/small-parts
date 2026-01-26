@@ -102,7 +102,11 @@
     <Menu anchor="main-menu" bind:open={menuOpen}>
       <MenuItem onclick={() => setPage('new-project')}>
         <div data-slot="headline">New</div>
-        <Icon data-slot="start">create_new_folder</Icon>
+        <Icon data-slot="start">assignment_add</Icon>
+      </MenuItem>
+      <MenuItem onclick={() => setPage('report')}>
+        <div data-slot="headline">Report</div>
+        <Icon data-slot="start">table</Icon>
       </MenuItem>
       <MenuItem onclick={() => setPage('settings')}>
         <div data-slot="headline">Settings</div>

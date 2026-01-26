@@ -25,6 +25,19 @@ type Settings = {
   server: string
 }
 
+type Report = {
+  thisWeek: {
+    monday: string
+    projects: Project[]
+    total: number
+  }
+  lastWeek: {
+    monday: string
+    projects: Project[]
+    total: number
+  }
+}
+
 declare global {
   interface Window {
     electron: ElectronAPI
@@ -32,6 +45,7 @@ declare global {
       projects: {
         new: (project: NewProject) => void
         get: () => void
+        getReport: () => Report
         update: (project: Project) => void
         delete: (directory: string) => void
         listen: (callback: (value: Project[]) => void) => void

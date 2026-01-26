@@ -7,6 +7,7 @@
   // -----------------------------------------------------------------------------
   import NewProject from './pages/new-project/Page.svelte'
   import Projects from './pages/projects/Page.svelte'
+  import Report from './pages/report/Page.svelte'
   import Settings from './pages/settings/Page.svelte'
 
   // MARK: Stores
@@ -18,6 +19,7 @@
   const pageMap = new SvelteMap([
     ['new-project', NewProject],
     ['projects', Projects],
+    ['report', Report],
     ['settings', Settings]
   ])
 
