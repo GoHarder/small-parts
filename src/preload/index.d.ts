@@ -38,6 +38,12 @@ type Report = {
   }
 }
 
+type EmailOptions = {
+  customerDrawings: boolean
+  orderChange: boolean
+  hasSheave: boolean
+}
+
 declare global {
   interface Window {
     electron: ElectronAPI
@@ -52,6 +58,9 @@ declare global {
       }
       folders: {
         open: (directory: string) => void
+      }
+      email: {
+        send: (project: Project, options: EmailOptions) => void
       }
       settings: {
         get: () => void

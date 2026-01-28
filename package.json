@@ -1,9 +1,9 @@
 {
-  "name": "small-parts",
+  "name": "project-manager",
   "version": "1.0.0",
   "description": "An Electron application with Svelte and TypeScript",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "Gregory Harder",
   "homepage": "https://electron-vite.org",
   "scripts": {
     "format": "prettier --plugin prettier-plugin-svelte --write .",
@@ -36,8 +36,10 @@
     "electron": "^39.2.6",
     "electron-builder": "^26.0.12",
     "electron-vite": "^5.0.0",
+    "eml-format-js": "^1.0.0-beta.6",
     "eslint": "^9.39.1",
     "eslint-plugin-svelte": "^3.13.1",
+    "pdf-lib": "^1.17.1",
     "prettier": "^3.7.4",
     "prettier-plugin-svelte": "^3.4.0",
     "sass-embedded": "^1.97.2",

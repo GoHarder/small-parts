@@ -5,6 +5,7 @@
     project: Project
     onComplete?: () => void
     onDelete?: () => void
+    onEmail?: () => void
   }
 
   type Project = {
@@ -30,7 +31,7 @@
 
   // MARK: Properties
   // -----------------------------------------------------------------------------
-  let { onComplete, onDelete, project }: Props = $props()
+  let { onComplete, onDelete, onEmail, project }: Props = $props()
 
   // MARK: State
   // -----------------------------------------------------------------------------
@@ -104,6 +105,10 @@
           </MenuItem>
         </Menu>
       </SubMenu>
+      <MenuItem onclick={onEmail}>
+        <div data-slot="headline">Email</div>
+        <Icon data-slot="end">email</Icon>
+      </MenuItem>
       <!-- Copy -->
       {#if onComplete}
         <MenuItem onclick={onComplete}>

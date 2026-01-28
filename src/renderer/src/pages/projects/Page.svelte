@@ -29,6 +29,9 @@
   import { IconButton } from '@moss/comp/icon-button'
   import { List } from '@moss/comp/list'
   import { Menu, MenuItem } from '@moss/comp/menu'
+  import { Dialog } from '@moss/comp/dialog'
+  import { Checkbox } from '@moss/comp/checkbox'
+  import { Button } from '@moss/comp/button'
 
   // MARK: Stores
   // -----------------------------------------------------------------------------
@@ -44,6 +47,12 @@
   // -----------------------------------------------------------------------------
   let projects = $state<Project[]>([])
   let menuOpen = $state(false)
+  let dialogOpen = $state(false)
+
+  let selected = $state<string>()
+  let customerDrawings = $state(true)
+  let orderChange = $state(false)
+  let hasSheave = $state(false)
 
   // MARK: Derived
   // -----------------------------------------------------------------------------
@@ -78,6 +87,24 @@
     window.api.projects.delete(`${project.contractNo} ${project.customerName}`)
   }
 
+  function onEmail(contractNo: string) {
+    dialogOpen = true
+    selected = contractNo
+  }
+
+  function sendEmail() {
+    const project = projects.find((project) => project.contractNo === selected)
+    if (!project) return
+
+    const snap = $state.snapshot(project)
+
+    window.api.email.send(snap, {
+      customerDrawings,
+      orderChange,
+      hasSheave
+    })
+  }
+
   window.api.projects.listen((update) => {
     projects = update
   })
@@ -92,6 +119,34 @@
 <svelte:head>
   <title>Project Manager - Projects</title>
 </svelte:head>
+
+<Dialog bind:open={dialogOpen}>
+  <div data-slot="headline">Email selection</div>
+
+  <form data-slot="content" id="email-form" method="dialog">
+    <Divider />
+    <div class="option">
+      <Checkbox id="cust-dwg" bind:checked={customerDrawings} />
+      <label for="cust-dwg">Customer drawings</label>
+    </div>
+    <div class="option">
+      <Checkbox id="order-chng" bind:checked={orderChange} disabled />
+      <label for="order-chng">Order changes</label>
+    </div>
+    <div class="option">
+      <Checkbox id="has-sheave" bind:checked={hasSheave} disabled={customerDrawings} />
+      <label for="has-sheave">Traction sheave</label>
+    </div>
+    <Divider />
+  </form>
+
+  <div data-slot="actions">
+    <Button form="email-form">Cancel</Button>
+    <Button form="email-form" onclick={sendEmail}>Ok</Button>
+  </div>
+</Dialog>
+
+<!-- <Dialog></Dialog> -->
 
 <div class="app-bar">
   <span style="position: relative">
@@ -132,6 +187,7 @@
           {project}
           onComplete={() => onComplete(project.contractNo)}
           onDelete={() => onDelete(project.contractNo)}
+          onEmail={() => onEmail(project.contractNo)}
         />
       {/each}
     </List>
@@ -178,6 +234,19 @@
     h2 {
       @include mixin.text-style('title-medium');
       margin-block-end: 0;
+    }
+  }
+
+  .option {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+
+    grid-template-columns: 40px 1fr;
+    height: 40px;
+
+    label {
+      justify-self: start;
     }
   }
 </style>

@@ -1,6 +1,25 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+type Project = {
+  _id: string
+  customerName: string
+  contractNo: string
+  poNo: string
+  user: string
+  price: number
+  created: Date | string
+  completed: string | null
+  released: string | null
+  bookmarked: boolean
+}
+
+type EmailOptions = {
+  customerDrawings: boolean
+  orderChange: boolean
+  hasSheave: boolean
+}
+
 // Custom APIs for renderer
 const api = {
   projects: {
@@ -13,6 +32,10 @@ const api = {
   },
   folders: {
     open: (directory: string) => ipcRenderer.send('folders-open', directory)
+  },
+  email: {
+    send: (project: Project, options: EmailOptions) =>
+      ipcRenderer.send('email-send', project, options)
   },
   settings: {
     get: () => ipcRenderer.send('settings-get'),

@@ -13,6 +13,12 @@ type Project = {
   notes: string
 }
 
+type EmailOptions = {
+  customerDrawings: boolean
+  orderChange: boolean
+  hasSheave: boolean
+}
+
 type Settings = {
   firstName: string
   lastName: string
@@ -23,6 +29,7 @@ type Settings = {
 import projects, { getProjectPath, getProjects, deleteProject, updateProject } from './app/projects'
 
 import { getSettings, initSettings, updateSettings } from './app/settings'
+import { buildEml } from './app/eml'
 
 function createWindow(): void {
   // Create the browser window.
@@ -103,6 +110,15 @@ app.whenReady().then(() => {
   ipcMain.on('settings-update', async (event, settings: Settings) => {
     await updateSettings(settings)
     event.reply('settings-listen', settings)
+  })
+
+  ipcMain.on('email-send', async (_event, project: Project, settings: EmailOptions) => {
+    buildEml(project, settings)
+
+    // console.log(emlData)
+
+    // await updateSettings(settings)
+    // event.reply('settings-listen', settings)
   })
 
   createWindow()
