@@ -151,12 +151,20 @@
 {/snippet}
 
 {#if report}
-  {@render reportCard(report.lastWeek)}
-  {@render reportCard(report.thisWeek)}
+  <div class="tables">
+    {@render reportCard(report.lastWeek)}
+    {@render reportCard(report.thisWeek)}
+  </div>
 {/if}
 
 <style lang="scss">
   @use '../../assets/scss/mixin';
+
+  .tables {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
   .wrapper {
     width: min(2000px, 100% - 24px);
