@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <style>
+      ul,
+      ol {
+        margin-bottom: 0;
+        margin-top: 0;
+      }
+      p,
+      li {
+        font-size: 12pt;
+        font-family: Calibri, sans-serif;
+      }
+      .bold {
+        font-weight: bolder;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Hello,</p>
+    <p>Attached is the <u>Ship Date Confirmation</u> for the job listed in the subject line.</p>
+    <p class="bold" style="margin: 0">
+      Note a price change has occurred. As such, an acknowledgement and revised PO is required prior
+      to placing the order into production. The design changes driving this price change are
+      identified below:
+    </p>
+    <ul>
+      {changes}
+    </ul>
+    <p style="margin-bottom: 0">
+      Review the following critical elements of the order for accuracy:
+    </p>
+    <ul>
+      <li>"Ship To" address</li>
+      <li>"Ship Date" of each product listed on the <u>Ship Date Confirmation</u></li>
+    </ul>
+    <p>
+      If any of this information is incorrect, please email
+      <a href="mailto:hworderconfirm@vantageelevation.com">HWOrderConfirm</a>
+      within two (2) business days.
+    </p>
+    <p>
+      After two (2) business days the order will be considered correct, moved to production,
+      manufactured, and shipped based on the attached <u>Ship Date Confirmation</u>.
+    </p>
+    <p>
+      Product manuals may be downloaded from
+      <a href="https://www.hollisterwhitney.com">HWEC website</a>
+      under the "Support" link.
+    </p>
+    <p>Thank you for choosing Vantage for your elevator needs,</p>
+    <p>HW Order Confirmation.</p>
+  </body>
+</html>

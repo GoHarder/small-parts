@@ -1,4 +1,4 @@
-# small-parts
+# Project Manager
 
 An Electron application with Svelte and TypeScript
 

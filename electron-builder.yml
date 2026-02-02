@@ -1,9 +1,10 @@
 appId: com.electron.app
-productName: small-parts
+productName: Project Manager
 directories:
   buildResources: build
 files:
   - '!**/.vscode/*'
+  - '!.local/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!svelte.config.mjs'

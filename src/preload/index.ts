@@ -37,6 +37,9 @@ const api = {
     send: (project: Project, options: EmailOptions) =>
       ipcRenderer.send('email-send', project, options)
   },
+  error: {
+    listen: (callback) => ipcRenderer.on('error-listen', (_event, error) => callback(error))
+  },
   settings: {
     get: () => ipcRenderer.send('settings-get'),
     update: (settings) => ipcRenderer.send('settings-update', settings),

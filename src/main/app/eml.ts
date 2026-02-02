@@ -2,12 +2,11 @@
 // -----------------------------------------------------------------------------
 // - Node
 import { join } from 'node:path'
-import { readFile } from 'node:fs/promises'
 // - NPM
 import { dialog } from 'electron'
 // - Local
 import { getSettings } from './settings'
-import { writeFile } from '../lib/file-system'
+import { getProjectDir, readFile, writeFile } from '../lib/file-system'
 
 // MARK: Types
 // -----------------------------------------------------------------------------
@@ -26,12 +25,11 @@ type EmailOptions = {
   customerDrawings: boolean
   orderChange: boolean
   hasSheave: boolean
+  changes: string
 }
 
 // MARK: Globals
 // -----------------------------------------------------------------------------
-const runningFolder = 'R:\\ENGINEERING JOBS_FINAL\\53xxxx\\536XXX\\_greg-running-folder'
-
 const boundary = '--boundary_area_0'
 
 // MARK: Helpers
@@ -39,22 +37,39 @@ const boundary = '--boundary_area_0'
 
 async function getHeader(subject: string) {
   const settings = await getSettings()
-  if (!settings) return ''
-  const { firstName, lastName, email } = settings
+
+  // TODO: Handle error in UI
+  if (!settings.success) return ''
+  const { data } = settings
+  const { firstName, lastName, email } = data
   return `From: ${firstName} ${lastName} <${email}>\nSubject: ${subject}\nX-Unsent: 1\nContent-Type: multipart/mixed; boundary=${boundary}\n\n`
 }
 
-async function loadHtml(template: string) {
-  const path = join(import.meta.dirname, '../..', 'src/main/email-templates', template)
+async function loadHtml(template: string, changes: string) {
+  const lines = changes.split('\n').map((line) => {
+    return `<li><span class="bold">${line}</span></li>`
+  })
+  const path = join(import.meta.dirname, '../..', 'email-templates', template)
   const html = await readFile(path, 'utf8')
-  return `--${boundary}\nContent-Type: text/html; charset=UTF-8\n\n${html}\n`
+
+  if (!html.success) {
+    // TODO: Handle error in UI
+    console.log(html)
+    return ''
+  }
+
+  html.data = html.data.replace('{changes}', lines.join('\n'))
+
+  return `--${boundary}\nContent-Type: text/html; charset=UTF-8\n\n${html.data}\n`
 }
 
 async function loadPdf(dirName: string, contractNo: string) {
+  const root = getProjectDir(contractNo)
+
   const res = await dialog.showOpenDialog({
     title: 'Select drawings',
     properties: ['openFile'],
-    defaultPath: join(runningFolder, dirName),
+    defaultPath: join(root, dirName),
     filters: [{ name: 'PDF', extensions: ['pdf'] }]
   })
 
@@ -64,15 +79,21 @@ async function loadPdf(dirName: string, contractNo: string) {
   const fileName = `Customer ${contractNo} dwgs`
   const pdf = await readFile(path, 'base64')
 
-  return `--${boundary}\nContent-Type: application/pdf; name=${fileName}.pdf\nContent-Transfer-Encoding: base64\nContent-Disposition: attachment\n\n${pdf}\n`
+  if (!pdf.success) {
+    // TODO: Handle error in UI
+    console.log(pdf)
+    return ''
+  }
+
+  return `--${boundary}\nContent-Type: application/pdf; name=${fileName}.pdf\nContent-Transfer-Encoding: base64\nContent-Disposition: attachment\n\n${pdf.data}\n`
 }
 
 const templates = [
+  { drawings: true, orderChange: true, hasSheave: false, file: 'dwgs-changes-spl.html' },
+  { drawings: false, orderChange: true, hasSheave: false, file: 'no-dwgs-changes-spl.html' },
   { drawings: true, orderChange: false, hasSheave: false, file: 'dwgs-no-changes-gen.html' },
   { drawings: false, orderChange: false, hasSheave: false, file: 'no-dwgs-no-changes-gen.html' }
 ]
-
-// const specialCustomers = ['schindler', 'tk', 'otis', 'fujitec']
 
 // MARK: Library
 // -----------------------------------------------------------------------------
@@ -92,7 +113,8 @@ export async function buildEml(project: Project, options: EmailOptions) {
   })
 
   if (template) {
-    emlData += await loadHtml(template.file)
+    // console.log(template.file)
+    emlData += await loadHtml(template.file, options.changes)
   }
 
   if (options.customerDrawings) {
@@ -101,6 +123,6 @@ export async function buildEml(project: Project, options: EmailOptions) {
 
   emlData += end
 
-  const path = join(runningFolder, folder)
+  const path = join(getProjectDir(project.contractNo), folder)
   await writeFile(`${path}/${subject}.eml`, emlData)
 }

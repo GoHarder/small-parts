@@ -32,6 +32,7 @@
   import { Dialog } from '@moss/comp/dialog'
   import { Checkbox } from '@moss/comp/checkbox'
   import { Button } from '@moss/comp/button'
+  import { TextField } from '@moss/comp/text-field'
 
   // MARK: Stores
   // -----------------------------------------------------------------------------
@@ -50,9 +51,10 @@
   let dialogOpen = $state(false)
 
   let selected = $state<string>()
-  let customerDrawings = $state(true)
+  let customerDrawings = $state(false)
   let orderChange = $state(false)
   let hasSheave = $state(false)
+  let changes = $state<string>('')
 
   // MARK: Derived
   // -----------------------------------------------------------------------------
@@ -101,7 +103,8 @@
     window.api.email.send(snap, {
       customerDrawings,
       orderChange,
-      hasSheave
+      hasSheave,
+      changes
     })
   }
 
@@ -119,34 +122,6 @@
 <svelte:head>
   <title>Project Manager - Projects</title>
 </svelte:head>
-
-<Dialog bind:open={dialogOpen}>
-  <div data-slot="headline">Email selection</div>
-
-  <form data-slot="content" id="email-form" method="dialog">
-    <Divider />
-    <div class="option">
-      <Checkbox id="cust-dwg" bind:checked={customerDrawings} />
-      <label for="cust-dwg">Customer drawings</label>
-    </div>
-    <div class="option">
-      <Checkbox id="order-chng" bind:checked={orderChange} disabled />
-      <label for="order-chng">Order changes</label>
-    </div>
-    <div class="option">
-      <Checkbox id="has-sheave" bind:checked={hasSheave} disabled={customerDrawings} />
-      <label for="has-sheave">Traction sheave</label>
-    </div>
-    <Divider />
-  </form>
-
-  <div data-slot="actions">
-    <Button form="email-form">Cancel</Button>
-    <Button form="email-form" onclick={sendEmail}>Ok</Button>
-  </div>
-</Dialog>
-
-<!-- <Dialog></Dialog> -->
 
 <div class="app-bar">
   <span style="position: relative">
@@ -202,6 +177,39 @@
   </div>
 </div>
 
+<Dialog bind:open={dialogOpen}>
+  <div data-slot="headline">Email selection</div>
+
+  <form data-slot="content" id="email-form" method="dialog">
+    <Divider />
+    <div class="option">
+      <Checkbox id="cust-dwg" bind:checked={customerDrawings} />
+      <label for="cust-dwg">Customer drawings</label>
+    </div>
+    <div class="option">
+      <Checkbox id="order-chng" bind:checked={orderChange} />
+      <label for="order-chng">Order changes</label>
+    </div>
+    <div class="option">
+      <Checkbox id="has-sheave" bind:checked={hasSheave} disabled={customerDrawings} />
+      <label for="has-sheave">Traction sheave</label>
+    </div>
+    <Divider />
+
+    {#if orderChange}
+      <div class="changes">
+        <TextField bind:value={changes} label="Changes" type="textarea" rows={5} cols={46} />
+      </div>
+      <Divider />
+    {/if}
+  </form>
+
+  <div data-slot="actions">
+    <Button form="email-form">Cancel</Button>
+    <Button form="email-form" onclick={sendEmail}>Ok</Button>
+  </div>
+</Dialog>
+
 <style lang="scss">
   @use '../../assets/scss/mixin';
 
@@ -248,5 +256,9 @@
     label {
       justify-self: start;
     }
+  }
+
+  .changes {
+    margin-block: 12px;
   }
 </style>

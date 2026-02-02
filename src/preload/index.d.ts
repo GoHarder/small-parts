@@ -1,5 +1,7 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
+import { OneOf } from '@moss/types'
+
 type Project = {
   _id: string
   customerName: string
@@ -42,6 +44,12 @@ type EmailOptions = {
   customerDrawings: boolean
   orderChange: boolean
   hasSheave: boolean
+  changes: string
+}
+
+type MainError = {
+  code: string
+  message: string
 }
 
 declare global {
@@ -51,7 +59,7 @@ declare global {
       projects: {
         new: (project: NewProject) => void
         get: () => void
-        getReport: () => Report
+        getReport: () => OneOf<[Report, MainError]> | undefined
         update: (project: Project) => void
         delete: (directory: string) => void
         listen: (callback: (value: Project[]) => void) => void
@@ -61,6 +69,9 @@ declare global {
       }
       email: {
         send: (project: Project, options: EmailOptions) => void
+      }
+      error: {
+        listen: (callback: (value: MainError) => void) => void
       }
       settings: {
         get: () => void
