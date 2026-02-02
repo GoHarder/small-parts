@@ -28,12 +28,14 @@
     contractNo: string
     price: number
     completed: string | null
+    user: string
   }
 
   // MARK: Components
   // -----------------------------------------------------------------------------
   import { Icon } from '@moss/comp/icon'
   import { IconButton } from '@moss/comp/icon-button'
+  import { Elevation } from '@moss/comp/elevation'
 
   // MARK: Stores
   // -----------------------------------------------------------------------------
@@ -54,7 +56,13 @@
   // -----------------------------------------------------------------------------
   function dateString(dateStr: string) {
     const date = new Date(dateStr)
-    return dateFormatter.format(date)
+    console.log(date)
+
+    try {
+      return dateFormatter.format(date)
+    } catch (error) {
+      return 'Invalid date'
+    }
   }
 
   function priceString(price: number) {
@@ -77,8 +85,8 @@
   // -----------------------------------------------------------------------------
   function copyTable(projects: Project[]) {
     const lines = projects.map((project) => {
-      const { completed, contractNo, customerName, price } = project
-      return `${dateString(completed)}\t${price}\t${contractNo}\t${customerName}`
+      const { completed, contractNo, customerName, price, user } = project
+      return `${dateString(completed)}\t${price}\t${contractNo}\t${customerName}\t${user}`
     })
 
     const text = lines.join('\n')
@@ -89,7 +97,24 @@
   // MARK: Lifecycle
   // -----------------------------------------------------------------------------
   onMount(async () => {
-    report = await window.api.projects.getReport()
+    const res = await window.api.projects.getReport()
+
+    if (res.code) {
+      // TODO: Handle error in UI
+      return
+    }
+
+    res.lastWeek.projects.map((row) => {
+      row.user = row.user.replace(/@.*$/, '')
+      return row
+    })
+
+    res.thisWeek.projects.map((row) => {
+      row.user = row.user.replace(/@.*$/, '')
+      return row
+    })
+
+    report = res as Report
   })
 </script>
 
@@ -109,6 +134,7 @@
     <td>{dateString(project.completed)}</td>
     <td>{project.contractNo}</td>
     <td>{project.customerName}</td>
+    <td>{project.user}</td>
     <td>{priceString(project.price)}</td>
   </tr>
 {/snippet}
@@ -116,13 +142,14 @@
 {#snippet reportCard(section: Section)}
   {#if section.projects.length > 0}
     <div class="wrapper">
+      <Elevation />
       <table>
         <caption>
           Week of {dateString(section.monday)}
         </caption>
         <thead>
           <tr>
-            <th>Date</th><th>Contract</th><th>Customer</th><th>Price</th>
+            <th>Date</th><th>Contract</th><th>Customer</th><th>Engineer</th><th>Price</th>
           </tr>
         </thead>
         <tbody>
@@ -132,7 +159,7 @@
         </tbody>
         <tfoot>
           <tr>
-            <th class="total" scope="row" colspan="3">Total</th>
+            <th class="total" scope="row" colspan="4">Total</th>
             <th>{priceString(section.total)}</th>
           </tr>
         </tfoot>
@@ -161,24 +188,38 @@
   @use '../../assets/scss/mixin';
 
   .tables {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: start;
+
+    padding-inline: 12px;
+    --grid-max-col-qty: 2;
+    --grid-gap: 8px;
+    --grid-min-col-width: 500px;
+
+    --grid-col-width-calc: calc(
+      (100% - var(--grid-gap) * var(--grid-max-col-qty)) / var(--grid-max-col-qty)
+    );
+    --grid-col-min-size-calc: min(100%, max(var(--grid-min-col-width), var(--grid-col-width-calc)));
+
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-col-min-size-calc), 1fr));
   }
 
   .wrapper {
-    width: min(2000px, 100% - 24px);
+    position: relative;
+    --md-elevation-level: 2; // width: min(2000px, 100% - 24px);
+    width: 100%;
     margin-inline: auto;
     display: flex;
     justify-content: flex-start;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: var(--md-sys-shape-corner-medium);
+    padding-inline-end: 0.25rem;
   }
 
   table {
-    // width: 100%;
-    background-color: var(--md-sys-color-surface-container-highest);
+    width: 100%;
     border-collapse: collapse;
-    border-end-start-radius: var(--md-sys-shape-corner-medium);
-    border-end-end-radius: var(--md-sys-shape-corner-medium);
   }
 
   caption,
@@ -188,17 +229,8 @@
     padding-block: 0.5rem;
   }
 
-  td:last-child {
-    padding-inline-end: 0;
-  }
-
   caption {
-    background-color: var(--md-sys-color-surface-container-highest);
-    border-start-start-radius: var(--md-sys-shape-corner-medium);
-    border-start-end-radius: var(--md-sys-shape-corner-medium);
-
     text-align: left;
-
     @include mixin.text-style('title-medium');
   }
 

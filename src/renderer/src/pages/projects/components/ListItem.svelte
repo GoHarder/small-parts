@@ -48,7 +48,9 @@
   }
 
   function copyDrawingTitle() {
-    navigator.clipboard.writeText(`${project.customerName} - ${project.contractNo} QTY: 0`)
+    navigator.clipboard.writeText(
+      `${project.customerName} - ${project.contractNo} QTY: 0`.toUpperCase()
+    )
   }
 
   function copyEmailSubject() {
