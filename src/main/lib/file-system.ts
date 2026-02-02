@@ -8,6 +8,7 @@ import {
   rm,
   writeFile as nWriteFile
 } from 'node:fs/promises'
+import { join } from 'node:path'
 
 import { isSystemError } from './error.ts'
 
@@ -17,30 +18,52 @@ import { type Json } from '@moss/types'
 // -----------------------------------------------------------------------------
 import { type PathLike } from 'node:fs'
 
+type MainError = {
+  success: false
+  error: {
+    code: string
+    message: string
+  }
+}
+
+type ReadResult = {
+  success: true
+  data: string | Buffer<ArrayBuffer>
+}
+
+// MARK: Helpers
+// -----------------------------------------------------------------------------
+function handleError(error: unknown) {
+  return {
+    success: false,
+    error: {
+      code: isSystemError(error) ? error.code || 'UNKNOWN' : 'UNKNOWN',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }
+  } as MainError
+}
+
 // MARK: Library
 // -----------------------------------------------------------------------------
 export async function access(path: PathLike) {
   try {
     await nAccess(path)
     return true
-  } catch (error) {
-    console.log(error)
+  } catch {
     return false
   }
 }
 
+/**
+ * Asynchronously creates a directory.
+ * @param path The path to the directory
+ */
 export async function createDir(path: PathLike) {
   try {
-    return await mkdir(path)
+    await mkdir(path, { recursive: true })
+    return { success: true } as const
   } catch (error) {
-    if (isSystemError(error) && error.code === 'EEXIST') {
-      return {
-        code: 'EEXIST',
-        message: `The directory ${path} already exists.`
-      }
-    }
-    console.log(error)
-    return
+    return handleError(error)
   }
 }
 
@@ -50,70 +73,71 @@ export async function createDir(path: PathLike) {
  */
 export async function readDir(path: PathLike) {
   try {
-    const entries = await readdir(path)
-
-    return entries
-
-    // for (const entry of entries) {
-    //   console.log(entry)
-    // }
+    await readdir(path)
+    return { success: true } as const
   } catch (error) {
-    console.log(error)
-    process.exit(1)
+    return handleError(error)
   }
 }
 
 export async function writeFile(path: PathLike, data: string | Uint8Array) {
   try {
     await nWriteFile(path, data)
+    return { success: true } as const
   } catch (error) {
-    console.log(error)
+    return handleError(error)
   }
 }
 
-export async function readFile(path: PathLike): Promise<string>
-export async function readFile(path: PathLike, type: 'buffer'): Promise<Buffer>
 export async function readFile(
   path: PathLike,
-  type: BufferEncoding | 'buffer' = 'utf8'
-): Promise<string | Buffer> {
+  options: BufferEncoding
+): Promise<{ success: true; data: string } | MainError>
+export async function readFile(
+  path: PathLike,
+  options?: BufferEncoding
+): Promise<ReadResult | MainError> {
   try {
-    if (type !== 'buffer') {
-      const data = await nReadFile(path, type)
-      return data
-    }
-
-    const data = await nReadFile(path)
-    return data
+    const data = await nReadFile(path, options)
+    return { success: true, data } as const
   } catch (error) {
-    console.log(error)
-    return ''
+    return handleError(error)
   }
 }
 
 export async function deleteDir(path: PathLike) {
   try {
     await rm(path, { recursive: true, force: true })
+    return { success: true }
   } catch (error) {
-    console.log(error)
+    return handleError(error)
   }
 }
 
 export async function writeJsonFile<D = Json>(path: PathLike, data: D) {
   try {
     const dataString = JSON.stringify(data, null, 2)
-    await nWriteFile(path, dataString)
+    const result = await writeFile(path, dataString as string)
+    if (!result.success) return result
+    return { success: true } as const
   } catch (error) {
-    console.log(error)
+    return handleError(error)
   }
 }
 
 export async function readJsonFile<R>(path: PathLike) {
   try {
-    const dataString = await readFile(path)
-    return JSON.parse(dataString) as R
+    const dataString = await readFile(path, 'utf8')
+    if (!dataString.success) return dataString
+    return { success: true, data: JSON.parse(dataString.data) as R } as const
   } catch (error) {
-    console.log(error)
-    return
+    return handleError(error)
   }
+}
+
+export function getProjectDir(contractNo: string) {
+  const root = 'R:\\ENGINEERING JOBS_FINAL'
+  const dirk1 = contractNo.replace(/\d{4}$/, 'xxxx')
+  const dir2 = contractNo.replace(/\d{3}$/, 'xxx')
+  return join(root, dirk1, dir2)
 }

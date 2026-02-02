@@ -17,18 +17,11 @@ type EmailOptions = {
   customerDrawings: boolean
   orderChange: boolean
   hasSheave: boolean
-}
-
-type Settings = {
-  firstName: string
-  lastName: string
-  email: string
-  server: string
+  changes: string
 }
 
 import projects, { getProjectPath, getProjects, deleteProject, updateProject } from './app/projects'
-
-import { getSettings, initSettings, updateSettings } from './app/settings'
+import settings, { initSettings } from './app/settings'
 import { buildEml } from './app/eml'
 
 function createWindow(): void {
@@ -55,7 +48,12 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.on('did-finish-load', async () => {
-    await initSettings()
+    const init = await initSettings()
+
+    if (init && !init.success) {
+      // @ts-ignore
+      mainWindow.webContents.send('error-listen', init.error)
+    }
   })
 
   // HMR for renderer base on electron-vite cli.
@@ -103,22 +101,10 @@ app.whenReady().then(() => {
     shell.openPath(path)
   })
 
-  ipcMain.on('settings-get', async (event) => {
-    event.reply('settings-listen', await getSettings())
-  })
-
-  ipcMain.on('settings-update', async (event, settings: Settings) => {
-    await updateSettings(settings)
-    event.reply('settings-listen', settings)
-  })
+  settings()
 
   ipcMain.on('email-send', async (_event, project: Project, settings: EmailOptions) => {
     buildEml(project, settings)
-
-    // console.log(emlData)
-
-    // await updateSettings(settings)
-    // event.reply('settings-listen', settings)
   })
 
   createWindow()
